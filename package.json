@@ -1,0 +1,20 @@
+{
+  "name": "fixelart",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Szymon Wiszczuk <golota60@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn build && node lib/index.js",
+    "build": "rimraf lib && tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@types/pngjs": "^6.0.1",
+    "rimraf": "^4.4.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0"
+  }
+}
