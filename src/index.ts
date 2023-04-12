@@ -75,7 +75,7 @@ const fix = (
   outPixHeight: number,
   strategy: StrategiesType = Strategies.MAJORITYWITHIGNORE
 ) => {
-  const png = loadPng("./testgray.png");
+  const png = loadPng("./test3.png");
 
   // alg here
   const imageHeight = png.height;
@@ -114,23 +114,41 @@ const fix = (
       const colIndex = wI % outPixWidth;
       const rowIndex = hI % outPixHeight;
 
+      //      console.log(colIndex, rowIndex);
       // this means we're at the row level of a new block
       if (rowIndex === 0 && colIndex === 0) {
+        console.log(colIndex, rowIndex, "new block!");
         blocks.push([currentPixel]);
       } else {
         // Push to a corresponding block
-        // Logic is - take the amount of blocks "over the current block"( Math.floor(hI / outPixHeight) * (outPixWidth - 1) )
-        // and add the current column in the row we're currently traversing
-        blocks[
-          Math.floor(hI / outPixHeight) * (outPixWidth - 1) +
-            Math.floor(wI / outPixWidth)
-        ].push(currentPixel);
+        // Logic is
+        // - take the amount of blocks "over the current block"( Math.floor(hI / outPixHeight) * (outPixWidth - 1) )
+        // - and add the current column in the row we're currently traversing
+        const blockIndex =
+          Math.floor(hI / outPixHeight) * Math.floor(imageWidth / outPixWidth) +
+          //          rowIndex * outPixWidth +
+          Math.floor(wI / outPixWidth);
+
+        console.log(
+          colIndex,
+          rowIndex,
+          blockIndex,
+          Math.floor(hI / outPixHeight),
+          outPixWidth,
+          Math.floor(wI / outPixWidth),
+          "ay",
+          imageWidth,
+          outPixWidth,
+          Math.floor(imageWidth / outPixWidth)
+        );
+        blocks[blockIndex].push(currentPixel);
       }
     }
   }
-  console.log(blocks);
+  console.log(blocks, "b4");
 
   // Go through the blocks and mutate accordingly
+
   for (let bI = 0; bI < blocks.length; bI++) {
     const block = blocks[bI];
     switch (strategy) {
@@ -148,11 +166,36 @@ const fix = (
 
   const flatmapped = blocks.flatMap((e) => e).flatMap((e) => e);
 
-  for (let i = 0; i < imageData.length; i++) {
-    imageData[i] = flatmapped[i];
+  console.log(blocks, "blocks");
+
+  for (let hI = 0; hI < imageHeight; hI++) {
+    for (let wI = 0; wI < imageWidth; wI++) {
+      const idStart = imageWidth * hI + wI;
+      // effectively start of data
+      const idx = idStart << 2;
+
+      const colIndex = wI % outPixWidth;
+      const rowIndex = hI % outPixHeight;
+
+      // Amount of things "over" the current block
+      const currentBlockIndex =
+        Math.floor(hI / outPixHeight) * Math.floor(imageWidth / outPixWidth) +
+        //          rowIndex * outPixWidth +
+        Math.floor(wI / outPixWidth);
+
+      const currentBlock = blocks[currentBlockIndex];
+
+      //      console.log(currentBlockIndex, rowIndex, colIndex);
+
+      const lol = Math.floor(hI % outPixHeight);
+
+      imageData[idx] = currentBlock[lol + colIndex][0];
+      imageData[idx + 1] = currentBlock[lol + colIndex][1];
+      imageData[idx + 2] = currentBlock[lol + colIndex][2];
+      imageData[idx + 3] = currentBlock[lol + colIndex][3];
+    }
   }
 
-  console.log(flatmapped.length);
   console.log(imageData.length);
   savePng(png, "./test1out.png");
 };
