@@ -48,7 +48,58 @@ const getMeanOfColors = (pixels: Array<Pixel>): Pixel => {
 
   return [red, green, blue, alpha];
 };
-// input: a jpeg
+
+interface MajorityColorData {
+  color: Pixel;
+  occurences: number;
+}
+
+const compareWithTolerance = (
+  val: number,
+  val2: number,
+  tolerance: number
+): boolean => {
+  return val + tolerance > val2 && val2 > val - tolerance;
+};
+
+const comparePixelPredicate = (
+  pix: Pixel,
+  pix2: Pixel,
+  tolerance: number
+): boolean => {
+  return (
+    compareWithTolerance(pix[0], pix2[0], tolerance) &&
+    compareWithTolerance(pix[1], pix2[1], tolerance) &&
+    compareWithTolerance(pix[2], pix2[2], tolerance) &&
+    compareWithTolerance(pix[3], pix2[3], tolerance)
+  );
+};
+
+const getMajorityColor = (pixels: Array<Pixel>, tolerance = 1): Pixel => {
+  // TODO: write this shit performantly instead of like this
+  const colorsAndOccurences = pixels.reduce((acc, pixel) => {
+    const found = acc.find((pixOccurData) =>
+      comparePixelPredicate(pixOccurData.color, pixel, tolerance)
+    );
+    if (!!found) {
+      const filteredOut = acc.filter(
+        (pixOccurData) =>
+          !comparePixelPredicate(pixOccurData.color, pixel, tolerance)
+      );
+      return [{ ...found, occurences: found.occurences + 1 }, ...filteredOut];
+    }
+    return [...acc, { color: pixel, occurences: 1 }];
+  }, [] as Array<MajorityColorData>);
+
+  const majority = colorsAndOccurences.reduce((acc, pixOccurData, index) => {
+    if (index === 0) return pixOccurData;
+    return acc.occurences > pixOccurData.occurences ? acc : pixOccurData;
+  }, {} as MajorityColorData);
+
+  return majority.color;
+};
+
+// input: a png
 
 // algorithm ideas:
 //  - take the most prevalent color and make it the main
@@ -63,9 +114,16 @@ const getMeanOfColors = (pixels: Array<Pixel>): Pixel => {
 //
 
 const Strategies = Object.freeze({
+  // take the color that takes the majority of the block
   MAJORITY: "majority",
+  // just take the mean out of colors in the current block
   MEAN: "mean",
-  MAJORITYWITHIGNORE: "majorityWithIgnore",
+  // take the color only if it is present for over X% of the image, otherwise take mean
+  ALG50: "ALG50",
+  ALG60: "ALG60",
+  ALG70: "ALG70",
+  ALG80: "ALG80",
+  ALG90: "ALG90",
 } as const);
 
 type StrategiesType = (typeof Strategies)[keyof typeof Strategies];
@@ -73,7 +131,7 @@ type StrategiesType = (typeof Strategies)[keyof typeof Strategies];
 const fix = (
   outPixWidth: number,
   outPixHeight: number,
-  strategy: StrategiesType = Strategies.MAJORITYWITHIGNORE
+  strategy: StrategiesType
 ) => {
   const png = loadPng("./test3.png");
 
@@ -158,8 +216,16 @@ const fix = (
         blocks[bI] = new Array(block.length).fill(mean);
         break;
       case Strategies.MAJORITY:
+        // if the color is +/- tolerance value we treat it the same
+        // e.g. 111,111,111,255 would equal 112,112,112,255 if tolerance > 1.
+        // This is to account for potential export discrepancies
+        // TODO: make it inputtable?
+        const tolerance = 1;
+        const majorityColor = getMajorityColor(block, tolerance);
+
+        blocks[bI] = new Array(block.length).fill(majorityColor);
         break;
-      case Strategies.MAJORITYWITHIGNORE:
+      case Strategies.ALG50:
         break;
     }
   }
@@ -200,4 +266,4 @@ const fix = (
   savePng(png, "./test1out.png");
 };
 
-fix(4, 4, Strategies.MEAN);
+fix(4, 4, Strategies.MAJORITY);
