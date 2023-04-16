@@ -1,6 +1,7 @@
 import fs from "fs";
 import { PNGWithMetadata } from "pngjs";
 import { PNG } from "pngjs";
+// TODO: Add a 'shift' option? that would "shift" the start by N pixels
 
 // size:4 -> r,g,b,a
 type Pixel = Array<number>;
@@ -51,7 +52,7 @@ const getMeanOfColors = (pixels: Array<Pixel>): Pixel => {
 
 interface MajorityColorData {
   color: Pixel;
-  occurences: number;
+  occurences: number; // n of occurences
 }
 
 const compareWithTolerance = (
@@ -75,7 +76,10 @@ const comparePixelPredicate = (
   );
 };
 
-const getMajorityColor = (pixels: Array<Pixel>, tolerance = 1): Pixel => {
+const getMajorityColor = (
+  pixels: Array<Pixel>,
+  tolerance = 1
+): MajorityColorData => {
   // TODO: write this shit performantly instead of like this
   const colorsAndOccurences = pixels.reduce((acc, pixel) => {
     const found = acc.find((pixOccurData) =>
@@ -96,7 +100,7 @@ const getMajorityColor = (pixels: Array<Pixel>, tolerance = 1): Pixel => {
     return acc.occurences > pixOccurData.occurences ? acc : pixOccurData;
   }, {} as MajorityColorData);
 
-  return majority.color;
+  return majority;
 };
 
 // input: a png
@@ -112,6 +116,7 @@ const getMajorityColor = (pixels: Array<Pixel>, tolerance = 1): Pixel => {
 //  output: a fixed jpeg
 //
 //
+//
 
 const Strategies = Object.freeze({
   // take the color that takes the majority of the block
@@ -119,11 +124,12 @@ const Strategies = Object.freeze({
   // just take the mean out of colors in the current block
   MEAN: "mean",
   // take the color only if it is present for over X% of the image, otherwise take mean
-  ALG50: "ALG50",
-  ALG60: "ALG60",
-  ALG70: "ALG70",
-  ALG80: "ALG80",
-  ALG90: "ALG90",
+
+  ALG50: 50,
+  ALG60: 60,
+  ALG70: 70,
+  ALG80: 80,
+  ALG90: 90,
 } as const);
 
 type StrategiesType = (typeof Strategies)[keyof typeof Strategies];
@@ -133,7 +139,7 @@ const fix = (
   outPixHeight: number,
   strategy: StrategiesType
 ) => {
-  const png = loadPng("./test3.png");
+  const png = loadPng("./test1.png");
 
   // alg here
   const imageHeight = png.height;
@@ -175,7 +181,6 @@ const fix = (
       //      console.log(colIndex, rowIndex);
       // this means we're at the row level of a new block
       if (rowIndex === 0 && colIndex === 0) {
-        console.log(colIndex, rowIndex, "new block!");
         blocks.push([currentPixel]);
       } else {
         // Push to a corresponding block
@@ -187,31 +192,21 @@ const fix = (
           //          rowIndex * outPixWidth +
           Math.floor(wI / outPixWidth);
 
-        console.log(
-          colIndex,
-          rowIndex,
-          blockIndex,
-          Math.floor(hI / outPixHeight),
-          outPixWidth,
-          Math.floor(wI / outPixWidth),
-          "ay",
-          imageWidth,
-          outPixWidth,
-          Math.floor(imageWidth / outPixWidth)
-        );
         blocks[blockIndex].push(currentPixel);
       }
     }
   }
-  console.log(blocks, "b4");
 
   // Go through the blocks and mutate accordingly
 
   for (let bI = 0; bI < blocks.length; bI++) {
+    const tolerance = 1;
     const block = blocks[bI];
+    const { color, occurences } = getMajorityColor(block, tolerance);
+
+    const mean = getMeanOfColors(block);
     switch (strategy) {
       case Strategies.MEAN:
-        const mean = getMeanOfColors(block);
         console.log(mean);
         blocks[bI] = new Array(block.length).fill(mean);
         break;
@@ -220,19 +215,27 @@ const fix = (
         // e.g. 111,111,111,255 would equal 112,112,112,255 if tolerance > 1.
         // This is to account for potential export discrepancies
         // TODO: make it inputtable?
-        const tolerance = 1;
-        const majorityColor = getMajorityColor(block, tolerance);
 
-        blocks[bI] = new Array(block.length).fill(majorityColor);
+        blocks[bI] = new Array(block.length).fill(color);
         break;
-      case Strategies.ALG50:
+
+      // get all the alg cases
+      default:
+        const coverage: number = occurences / (outPixWidth * outPixHeight);
+        if (typeof strategy !== "number") {
+          throw new Error("There is no such strategy");
+        }
+
+        if (coverage >= strategy) {
+          blocks[bI] = new Array(block.length).fill(color);
+        } else {
+          blocks[bI] = new Array(block.length).fill(mean);
+        }
         break;
     }
   }
 
   const flatmapped = blocks.flatMap((e) => e).flatMap((e) => e);
-
-  console.log(blocks, "blocks");
 
   for (let hI = 0; hI < imageHeight; hI++) {
     for (let wI = 0; wI < imageWidth; wI++) {
@@ -266,4 +269,4 @@ const fix = (
   savePng(png, "./test1out.png");
 };
 
-fix(4, 4, Strategies.MAJORITY);
+fix(8, 8, Strategies.ALG80);
