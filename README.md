@@ -34,6 +34,8 @@ Recipe:
 yarn example-all-images <strategy> <pixel_width> <pixel_height>
 ```
 
+example:
+
 ```
 yarn example-all-images MEAN 4 4
 ```

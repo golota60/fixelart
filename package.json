@@ -1,7 +1,17 @@
 {
   "name": "fixelart",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Szymon Wiszczuk <golota60@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -14,9 +24,7 @@
     "@types/node": "^18.15.11",
     "@types/pngjs": "^6.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
-  },
-  "dependencies": {
+    "typescript": "^5.0.4",
     "pngjs": "^7.0.0",
     "tsup": "^6.7.0"
   }
