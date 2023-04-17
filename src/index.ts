@@ -1,6 +1,5 @@
 import fs from "fs";
-import { PNGWithMetadata } from "pngjs";
-import { PNG } from "pngjs";
+import { PNG, PNGWithMetadata } from "pngjs";
 // TODO: Add a 'shift' option? that would "shift" the start by N pixels
 
 // size:4 -> r,g,b,a
@@ -14,15 +13,20 @@ type BlockRow = Array<Block>;
 // Full image represented as an array of blocks
 type ImageInBlocks = Array<BlockRow>;
 
-const loadPng = (fileName: string): PNGWithMetadata => {
-  //const file =
+/*
+ * Loads a png using `pngjs`
+ */
+export const loadPng = (fileName: string): PNGWithMetadata => {
   const file = fs.readFileSync(fileName);
 
   const png = PNG.sync.read(file);
   return png;
 };
 
-const savePng = (png: PNGWithMetadata, pathToSave: string) => {
+/*
+ * Saves a png using `pngjs`
+ */
+export const savePng = (png: PNGWithMetadata, pathToSave: string) => {
   let buff = PNG.sync.write(png);
 
   fs.writeFileSync(pathToSave, buff);
@@ -33,7 +37,7 @@ const accumulateColors = (pixels: Array<Pixel>, i: number) =>
     return acc + item[i];
   }, 0);
 
-const getMeanOfColors = (pixels: Array<Pixel>): Pixel => {
+const getAverageOfColors = (pixels: Array<Pixel>): Pixel => {
   const redAccumulated = accumulateColors(pixels, 0);
   const red = redAccumulated / pixels.length;
 
@@ -107,7 +111,7 @@ const getMajorityColor = (
 
 // algorithm ideas:
 //  - take the most prevalent color and make it the main
-//  - take the mean of colors
+//  - take the average/mean of colors
 //  - in between - e.g. if a color makes up less than <15% ignore it, otherwise add it to the mean.
 //
 //(some grid shifting might be needed e.g if the first row is 1.5 pixel high instead of 1)
@@ -118,13 +122,12 @@ const getMajorityColor = (
 //
 //
 
-const Strategies = Object.freeze({
+export const Strategies = Object.freeze({
   // take the color that takes the majority of the block
   MAJORITY: "majority",
   // just take the mean out of colors in the current block
-  MEAN: "mean",
+  AVERAGE: "average",
   // take the color only if it is present for over X% of the image, otherwise take mean
-
   ALG50: 50,
   ALG60: 60,
   ALG70: 70,
@@ -132,16 +135,19 @@ const Strategies = Object.freeze({
   ALG90: 90,
 } as const);
 
-type StrategiesType = (typeof Strategies)[keyof typeof Strategies];
+export type StrategiesType = (typeof Strategies)[keyof typeof Strategies];
 
-const fix = (
-  outPixWidth: number,
-  outPixHeight: number,
-  strategy: StrategiesType
-) => {
-  const png = loadPng("./test1.png");
+interface FixOptions {
+  outPixWidth: number;
+  outPixHeight: number;
+  strategy: StrategiesType;
+}
+export const fixImage = <T extends PNG = PNG>(
+  png: T,
+  { outPixWidth, outPixHeight, strategy }: FixOptions
+): T => {
+  //  const png = loadPng("./tests/assets/test1.png");
 
-  // alg here
   const imageHeight = png.height;
   const imageWidth = png.width;
   let imageData = png.data;
@@ -159,13 +165,11 @@ const fix = (
   console.log({ imageWidth, imageHeight });
   let blocks: Array<Block> = [];
 
+  // 1. Split into blocks
   for (let hI = 0; hI < imageHeight; hI++) {
     for (let wI = 0; wI < imageWidth; wI++) {
-      // go through all pixels per row
-
       const idStart = imageWidth * hI + wI;
       const idx = idStart << 2;
-      //console.log(imageData[idx], idx, idStart, hI, wI, rows.length);
 
       const currentPixel: Pixel = [
         imageData[idx],
@@ -174,22 +178,19 @@ const fix = (
         imageData[idx + 3],
       ];
 
-      // Index in the current row
       const colIndex = wI % outPixWidth;
       const rowIndex = hI % outPixHeight;
 
-      //      console.log(colIndex, rowIndex);
       // this means we're at the row level of a new block
       if (rowIndex === 0 && colIndex === 0) {
         blocks.push([currentPixel]);
       } else {
         // Push to a corresponding block
         // Logic is
-        // - take the amount of blocks "over the current block"( Math.floor(hI / outPixHeight) * (outPixWidth - 1) )
+        // - take the amount of blocks "over the current block"
         // - and add the current column in the row we're currently traversing
         const blockIndex =
           Math.floor(hI / outPixHeight) * Math.floor(imageWidth / outPixWidth) +
-          //          rowIndex * outPixWidth +
           Math.floor(wI / outPixWidth);
 
         blocks[blockIndex].push(currentPixel);
@@ -197,18 +198,16 @@ const fix = (
     }
   }
 
-  // Go through the blocks and mutate accordingly
-
+  // 2. Go through the blocks and mutate png according to strategy
   for (let bI = 0; bI < blocks.length; bI++) {
     const tolerance = 1;
     const block = blocks[bI];
     const { color, occurences } = getMajorityColor(block, tolerance);
 
-    const mean = getMeanOfColors(block);
+    const average = getAverageOfColors(block);
     switch (strategy) {
-      case Strategies.MEAN:
-        console.log(mean);
-        blocks[bI] = new Array(block.length).fill(mean);
+      case Strategies.AVERAGE:
+        blocks[bI] = new Array(block.length).fill(average);
         break;
       case Strategies.MAJORITY:
         // if the color is +/- tolerance value we treat it the same
@@ -229,14 +228,13 @@ const fix = (
         if (coverage >= strategy) {
           blocks[bI] = new Array(block.length).fill(color);
         } else {
-          blocks[bI] = new Array(block.length).fill(mean);
+          blocks[bI] = new Array(block.length).fill(average);
         }
         break;
     }
   }
 
-  const flatmapped = blocks.flatMap((e) => e).flatMap((e) => e);
-
+  // 3. De-blockify png and mutate it
   for (let hI = 0; hI < imageHeight; hI++) {
     for (let wI = 0; wI < imageWidth; wI++) {
       const idStart = imageWidth * hI + wI;
@@ -254,19 +252,14 @@ const fix = (
 
       const currentBlock = blocks[currentBlockIndex];
 
-      //      console.log(currentBlockIndex, rowIndex, colIndex);
+      const baseIndex = Math.floor(hI % outPixHeight);
 
-      const lol = Math.floor(hI % outPixHeight);
-
-      imageData[idx] = currentBlock[lol + colIndex][0];
-      imageData[idx + 1] = currentBlock[lol + colIndex][1];
-      imageData[idx + 2] = currentBlock[lol + colIndex][2];
-      imageData[idx + 3] = currentBlock[lol + colIndex][3];
+      imageData[idx] = currentBlock[baseIndex + colIndex][0];
+      imageData[idx + 1] = currentBlock[baseIndex + colIndex][1];
+      imageData[idx + 2] = currentBlock[baseIndex + colIndex][2];
+      imageData[idx + 3] = currentBlock[baseIndex + colIndex][3];
     }
   }
 
-  console.log(imageData.length);
-  savePng(png, "./test1out.png");
+  return png;
 };
-
-fix(8, 8, Strategies.ALG80);
