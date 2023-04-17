@@ -1,6 +1,6 @@
 {
   "name": "fixelart",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -18,14 +18,18 @@
     "start": "yarn build && node dist/index.js",
     "build": "tsup",
     "example-all-strategies": "ts-node ./tests/allStrategies.ts",
-    "example-all-images": "ts-node ./tests/allImages.ts"
+    "example-all-images": "ts-node ./tests/allImages.ts",
+    "release:patch": "yarn build && standard-version --release-as patch && yarn publish",
+    "release:minor": "yarn build && standard-version --release-as minor && yarn publish",
+    "release:major": "yarn build && standard-version --release-as major && yarn publish"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/pngjs": "^6.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
     "pngjs": "^7.0.0",
-    "tsup": "^6.7.0"
+    "standard-version": "^9.5.0",
+    "ts-node": "^10.9.1",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   }
 }
