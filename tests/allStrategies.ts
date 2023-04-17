@@ -1,4 +1,5 @@
-import { Strategies, fixImage, loadPng, savePng } from "../src";
+import { Strategies, fixImage } from "../src";
+import { loadPng, savePng } from "./testUtils";
 
 // Iterate all strategires for an image
 const generateAllStrategiesForImage = (

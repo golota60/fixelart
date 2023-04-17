@@ -1,4 +1,5 @@
-import { StrategiesType, fixImage, loadPng, savePng } from "../src";
+import { StrategiesType, fixImage } from "../src";
+import { loadPng, savePng } from "./testUtils";
 import fs from "fs";
 
 // Iterate over all assets for a given strategy

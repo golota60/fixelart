@@ -8,7 +8,8 @@ export type Block = Array<Pixel>;
 export interface MinimumData {
   height: number;
   width: number;
-  data: Array<number>;
+  // For our usage, it doesn't matter whether it's a buffer or an array
+  data: Buffer | Array<number>;
 }
 
 export const Strategies = Object.freeze({
@@ -116,8 +117,3 @@ export const getMajorityColor = (
 //
 //(some grid shifting might be needed e.g if the first row is 1.5 pixel high instead of 1)
 //(auto-detect pixel size?)
-//
-//  output: a fixed jpeg
-//
-//
-//

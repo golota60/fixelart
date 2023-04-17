@@ -2,11 +2,70 @@
 
 A simple utility to fix AI-generated pixelart
 
-### Generating test data
+### Installation
 
-All the test images are located inside `./tests/assets/` folder
+Using yarn
 
-Before running anything, install all the dependencies by running `yarn`.
+```ts
+yarn add fixelart
+```
+
+or npm
+
+```ts
+npm install fixelart
+```
+
+### Usage
+
+The `fixImage` function accepts an object with the following structure
+
+```
+export interface MinimumData {
+  height: number;
+  width: number;
+  data: Buffer | Array<number>; // This is an array of RGBA values
+}
+```
+
+Here's an example usage with `pngjs`.
+
+```ts
+import { fixImage } from "fixelart";
+import fs from "fs";
+import { PNGWithMetadata } from "pngjs";
+
+export const loadPng = (fileName: string): PNGWithMetadata => {
+  const file = fs.readFileSync(fileName);
+
+  const png = PNG.sync.read(file);
+  return png;
+};
+
+export const savePng = (png: PNGWithMetadata, pathToSave: string) => {
+  let buff = PNG.sync.write(png);
+
+  fs.writeFileSync(pathToSave, buff);
+};
+
+const png = loadPng(path);
+
+const fixedImage = fixImage(png, { outPixWidth, outPixHeight, strategy });
+
+savePng(fixedImage, "./output.png");
+```
+
+And here's an example usage with browser Canvas API
+
+```ts
+TODO!;
+```
+
+### Running examples
+
+All the test images are located inside `tests/assets` folder
+
+Before running anything, install all the dependencies by running `yarn`.
 
 There are currently two examples
 
