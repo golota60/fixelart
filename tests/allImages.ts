@@ -9,13 +9,20 @@ const generateAllImagesForStrategy = (
   strategy: StrategiesType
 ) => {
   const assetsData = fs.readdirSync("./assets");
+  const files = fs.readdirSync(".");
 
+  if (!files.includes("out")) {
+    fs.mkdirSync("./out");
+  }
   assetsData.forEach((fileName) => {
     const png = loadPng(fileName);
 
     const fixedImage = fixImage(png, { outPixWidth, outPixHeight, strategy });
 
-    savePng(fixedImage, `${fileName.split(".png").at(-2)!}-out.png`);
+    savePng(
+      fixedImage,
+      `./out/${fileName.split("/").at(-1)!.split(".png").at(-2)!}-out.png`
+    );
   });
 };
 

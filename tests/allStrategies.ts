@@ -1,5 +1,6 @@
 import { Strategies, fixImage } from "../src";
 import { loadPng, savePng } from "./testUtils";
+import fs from "fs";
 
 // Iterate all strategires for an image
 const generateAllStrategiesForImage = (
@@ -9,10 +10,18 @@ const generateAllStrategiesForImage = (
 ) => {
   Object.values(Strategies).forEach((strategy) => {
     const png = loadPng(path);
+    const files = fs.readdirSync(".");
+
+    if (!files.includes("out")) {
+      fs.mkdirSync("./out");
+    }
 
     const fixedImage = fixImage(png, { outPixWidth, outPixHeight, strategy });
 
-    savePng(fixedImage, `${path.split(".png").at(-2)!}-${strategy}.png`);
+    savePng(
+      fixedImage,
+      `./out/${path.split("/").at(-1)!.split(".png").at(-2)!}-${strategy}.png`
+    );
   });
 };
 

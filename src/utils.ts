@@ -18,11 +18,16 @@ export const Strategies = Object.freeze({
   // just take the mean out of colors in the current block
   AVERAGE: "average",
   // take the color only if it is present for over X% of the image, otherwise take average
-  ALG50: 50,
-  ALG60: 60,
-  ALG70: 70,
-  ALG80: 80,
-  ALG90: 90,
+  ALG05: 0.05,
+  ALG10: 0.1,
+  ALG20: 0.2,
+  ALG30: 0.3,
+  ALG40: 0.4,
+  ALG50: 0.5,
+  ALG60: 0.6,
+  ALG70: 0.7,
+  ALG80: 0.8,
+  ALG90: 0.9,
 } as const);
 
 export type StrategiesType = (typeof Strategies)[keyof typeof Strategies];
@@ -52,7 +57,12 @@ export const getAverageOfColors = (pixels: Array<Pixel>): Pixel => {
   const alphaAccumulated = accumulateColors(pixels, 3);
   const alpha = alphaAccumulated / pixels.length;
 
-  return [red, green, blue, alpha];
+  return [
+    Math.round(red),
+    Math.round(green),
+    Math.round(blue),
+    Math.round(alpha),
+  ];
 };
 
 interface MajorityColorData {
