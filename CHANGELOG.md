@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/golota60/fixelart/compare/v0.0.2...v0.0.3) (2023-04-18)
+
+
+### Features
+
+* some improvements ([78c1820](https://github.com/golota60/fixelart/commit/78c1820741606d82577a160a979df6b9a5880870))
+
 ### [0.0.2](https://github.com/golota60/fixelart/compare/v0.0.1...v0.0.2) (2023-04-17)
 
 ### 0.0.1 (2023-04-17)
