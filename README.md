@@ -25,6 +25,8 @@ export interface MinimumData {
   height: number;
   width: number;
   data: Buffer | Array<number>; // This is an array of RGBA values
+  tolerance?: number; // Tolerance when comparing colors
+  // e.g. for tolerance=1(default) rgba(1,1,1,1) would be "equal" to rgba(0,0,0,0) and rgba(2,2,2,2)
 }
 ```
 

@@ -36,6 +36,7 @@ export interface FixOptions {
   outPixWidth: number;
   outPixHeight: number;
   strategy: StrategiesType;
+  tolerance?: number;
 }
 
 const accumulateColors = (pixels: Array<Pixel>, i: number) =>

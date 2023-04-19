@@ -10,28 +10,29 @@ import {
 
 export const fixImage = <T extends MinimumData>(
   png: T,
-  { outPixWidth, outPixHeight, strategy }: FixOptions
+  { outPixWidth, outPixHeight, strategy, tolerance = 1 }: FixOptions
 ): T => {
   const imageHeight = png.height;
   const imageWidth = png.width;
-  let imageData = png.data;
+  let imageData = [...png.data];
 
   const pixBlockSizeWidth = Number((imageWidth / outPixWidth).toFixed(0));
   const pixBlockSizeHeight = Number((imageHeight / outPixHeight).toFixed(0));
 
-  if (pixBlockSizeWidth !== pixBlockSizeHeight) {
-    throw new Error(
-      `Different pixel values for width and height. Pix block height: ${pixBlockSizeHeight}. Pix block width: ${pixBlockSizeWidth}`
-    );
-  }
+  // Round down the image to width and height mathcing X*pixel
+  const adjustedWidth = Math.floor(imageWidth / outPixWidth) * outPixWidth;
+  const adjustedHeight = Math.floor(imageHeight / outPixHeight) * outPixHeight;
+
+  const widthOffset = imageWidth - adjustedWidth;
+  const heightOffset = imageHeight - adjustedHeight;
+
   let blocks: Array<Block> = [];
 
   // 1. Split into blocks
-  for (let hI = 0; hI < imageHeight; hI++) {
-    for (let wI = 0; wI < imageWidth; wI++) {
-      const idStart = imageWidth * hI + wI;
+  for (let hI = 0; hI < adjustedHeight; hI++) {
+    for (let wI = 0; wI < adjustedWidth; wI++) {
+      const idStart = imageWidth * hI + wI; // - widthOffset * wI - heightOffset * hI;
       const idx = idStart << 2;
-
       const currentPixel: Pixel = [
         imageData[idx],
         imageData[idx + 1],
@@ -61,7 +62,6 @@ export const fixImage = <T extends MinimumData>(
 
   // 2. Go through the blocks and mutate png according to strategy
   for (let bI = 0; bI < blocks.length; bI++) {
-    const tolerance = 1;
     const block = blocks[bI];
     const { color, occurences } = getMajorityColor(block, tolerance);
 
@@ -96,9 +96,9 @@ export const fixImage = <T extends MinimumData>(
   }
 
   // 3. De-blockify png and mutate it
-  for (let hI = 0; hI < imageHeight; hI++) {
-    for (let wI = 0; wI < imageWidth; wI++) {
-      const idStart = imageWidth * hI + wI;
+  for (let hI = 0; hI < adjustedHeight; hI++) {
+    for (let wI = 0; wI < adjustedWidth; wI++) {
+      const idStart = adjustedWidth * hI + wI;
       // effectively start of data
       const idx = idStart << 2;
 
@@ -121,5 +121,10 @@ export const fixImage = <T extends MinimumData>(
     }
   }
 
-  return png;
+  return {
+    ...png,
+    width: adjustedWidth,
+    height: adjustedHeight,
+    data: imageData,
+  };
 };
