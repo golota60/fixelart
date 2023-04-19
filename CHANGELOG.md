@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/golota60/fixelart/compare/v0.0.3...v0.0.4) (2023-04-19)
+
+
+### Features
+
+* support non-whole values ([05d435d](https://github.com/golota60/fixelart/commit/05d435dfd875c488ed5446e1c240e745d0bdcbe1))
+
 ### [0.0.3](https://github.com/golota60/fixelart/compare/v0.0.2...v0.0.3) (2023-04-18)
 
 
