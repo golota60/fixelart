@@ -16,7 +16,11 @@ const generateAllStrategiesForImage = (
       fs.mkdirSync("./out");
     }
 
-    const fixedImage = fixImage(png, { outPixWidth, outPixHeight, strategy });
+    const fixedImage = fixImage(png, {
+      outPixWidth,
+      outPixHeight,
+      strategy,
+    });
 
     savePng(
       fixedImage,

@@ -10,7 +10,13 @@ import {
 
 export const fixImage = <T extends MinimumData>(
   png: T,
-  { outPixWidth, outPixHeight, strategy, tolerance = 1 }: FixOptions
+  {
+    outPixWidth,
+    outPixHeight,
+    strategy,
+    tolerance = 1,
+    shrinkOutput = false,
+  }: FixOptions
 ): T => {
   const imageHeight = png.height;
   const imageWidth = png.width;
@@ -95,36 +101,46 @@ export const fixImage = <T extends MinimumData>(
     }
   }
 
-  // 3. De-blockify png and mutate it
-  for (let hI = 0; hI < adjustedHeight; hI++) {
-    for (let wI = 0; wI < adjustedWidth; wI++) {
-      const idStart = adjustedWidth * hI + wI;
-      // effectively start of data
-      const idx = idStart << 2;
+  if (shrinkOutput) {
+    const outData = blocks.flatMap((e) => e[0]);
+    return {
+      ...png,
+      width: adjustedWidth / outPixWidth,
+      height: adjustedHeight / outPixHeight,
+      data: outData,
+    };
+  } else {
+    // 3. De-blockify png and mutate it
+    for (let hI = 0; hI < adjustedHeight; hI++) {
+      for (let wI = 0; wI < adjustedWidth; wI++) {
+        const idStart = adjustedWidth * hI + wI;
+        // effectively start of data
+        const idx = idStart << 2;
 
-      const colIndex = wI % outPixWidth;
-      const rowIndex = hI % outPixHeight;
+        const colIndex = wI % outPixWidth;
+        const rowIndex = hI % outPixHeight;
 
-      // Amount of things "over" the current block
-      const currentBlockIndex =
-        Math.floor(hI / outPixHeight) * Math.floor(imageWidth / outPixWidth) +
-        Math.floor(wI / outPixWidth);
+        // Amount of things "over" the current block
+        const currentBlockIndex =
+          Math.floor(hI / outPixHeight) * Math.floor(imageWidth / outPixWidth) +
+          Math.floor(wI / outPixWidth);
 
-      const currentBlock = blocks[currentBlockIndex];
+        const currentBlock = blocks[currentBlockIndex];
 
-      const baseIndex = Math.floor(hI % outPixHeight);
+        const baseIndex = Math.floor(hI % outPixHeight);
 
-      imageData[idx] = currentBlock[baseIndex + colIndex][0];
-      imageData[idx + 1] = currentBlock[baseIndex + colIndex][1];
-      imageData[idx + 2] = currentBlock[baseIndex + colIndex][2];
-      imageData[idx + 3] = currentBlock[baseIndex + colIndex][3];
+        imageData[idx] = currentBlock[baseIndex + colIndex][0];
+        imageData[idx + 1] = currentBlock[baseIndex + colIndex][1];
+        imageData[idx + 2] = currentBlock[baseIndex + colIndex][2];
+        imageData[idx + 3] = currentBlock[baseIndex + colIndex][3];
+      }
     }
-  }
 
-  return {
-    ...png,
-    width: adjustedWidth,
-    height: adjustedHeight,
-    data: imageData,
-  };
+    return {
+      ...png,
+      width: adjustedWidth,
+      height: adjustedHeight,
+      data: imageData,
+    };
+  }
 };
