@@ -109,9 +109,14 @@ export const getHarmonicMeanOfColors = (pixels: Array<Pixel>) => {
 };
 
 const getGeometricMean = (numsToAvg: Array<number>) => {
-  const product = numsToAvg.reduce((acc, item) => acc * item, 1);
+  const squareRooted = numsToAvg.map((e) => Math.pow(e, 1 / numsToAvg.length));
 
-  return Math.round(Math.pow(product, 1 / numsToAvg.length));
+  const product = squareRooted.reduce((acc, item) => {
+    const itemNormalized = item !== 0 ? item : 1;
+    return acc * itemNormalized;
+  }, 1);
+
+  return Math.round(product);
 };
 
 export const getGeometricMeanOfColors = (pixels: Array<Pixel>) => {
