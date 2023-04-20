@@ -23,6 +23,10 @@ export const Strategies = Object.freeze({
   GEOMETRIC: "geometric",
   // midrange
   MIDRANGE: "midrange",
+  // quadratic mean
+  QUADRATIC: "quadratic",
+  // cubic mean
+  CUBIC: "cubic",
   // take the color only if it is present for over X% of the image, otherwise take average
   ALG05: 0.05,
   ALG10: 0.1,
@@ -150,6 +154,49 @@ export const getMidrangeOfColors = (pixels: Array<Pixel>) => {
 
   const alphaAccumulated = accumulateColors(pixels, 3);
   const alpha = getMidrange(alphaAccumulated);
+
+  return [red, green, blue, alpha];
+};
+
+const getQuadraticMean = (numsToAvg: Array<number>) => {
+  return Math.round(Math.sqrt(1 / numsToAvg.length) * Math.hypot(...numsToAvg));
+};
+
+export const getQuadraticMeanOfColors = (pixels: Array<Pixel>) => {
+  const redAccumulated = accumulateColors(pixels, 0);
+  const red = getQuadraticMean(redAccumulated);
+
+  const greenAccumulated = accumulateColors(pixels, 1);
+  const green = getQuadraticMean(greenAccumulated);
+
+  const blueAccumulated = accumulateColors(pixels, 2);
+  const blue = getQuadraticMean(blueAccumulated);
+
+  const alphaAccumulated = accumulateColors(pixels, 3);
+  const alpha = getQuadraticMean(alphaAccumulated);
+
+  return [red, green, blue, alpha];
+};
+
+const getCubicMean = (numsToAvg: Array<number>) => {
+  return Math.round(
+    Math.cbrt(1 / numsToAvg.length) *
+      Math.cbrt(numsToAvg.reduce((acc, elem) => acc + Math.pow(elem, 3), 0))
+  );
+};
+
+export const getCubicMeanOfColors = (pixels: Array<Pixel>) => {
+  const redAccumulated = accumulateColors(pixels, 0);
+  const red = getCubicMean(redAccumulated);
+
+  const greenAccumulated = accumulateColors(pixels, 1);
+  const green = getCubicMean(greenAccumulated);
+
+  const blueAccumulated = accumulateColors(pixels, 2);
+  const blue = getCubicMean(blueAccumulated);
+
+  const alphaAccumulated = accumulateColors(pixels, 3);
+  const alpha = getCubicMean(alphaAccumulated);
 
   return [red, green, blue, alpha];
 };

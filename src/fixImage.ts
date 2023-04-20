@@ -5,10 +5,12 @@ import {
   Pixel,
   Strategies,
   getAverageOfColors,
+  getCubicMeanOfColors,
   getGeometricMeanOfColors,
   getHarmonicMeanOfColors,
   getMajorityColor,
   getMidrangeOfColors,
+  getQuadraticMeanOfColors,
 } from "./utils";
 
 export const fixImage = <T extends MinimumData>(
@@ -101,6 +103,16 @@ export const fixImage = <T extends MinimumData>(
         const midrange = getMidrangeOfColors(block);
 
         blocks[bI] = new Array(block.length).fill(midrange);
+        break;
+      case Strategies.QUADRATIC:
+        const quadratic = getQuadraticMeanOfColors(block);
+
+        blocks[bI] = new Array(block.length).fill(quadratic);
+        break;
+      case Strategies.CUBIC:
+        const cubic = getCubicMeanOfColors(block);
+
+        blocks[bI] = new Array(block.length).fill(cubic);
         break;
       // get all the alg cases
       default:

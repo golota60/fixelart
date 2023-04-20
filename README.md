@@ -55,6 +55,8 @@ Below you can find all the existing strategies and what they do underneath the h
 - `Strategies.HARMONIC` - take the [harmonic mean](https://en.wikipedia.org/wiki/Harmonic_mean) of colors
 - `Strategies.GEOMETRIC` - take the [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of colors
 - `Strategies.MIDRANGE` - take the [midrange](https://en.wikipedia.org/wiki/Mid-range) of colors
+- `Strategies.QUADRATIC` - take the [quadratic mean](https://en.wikipedia.org/wiki/Root_mean_square) of colors
+- `Strategies.CUBIC` - take the [cubic mean](https://en.wikipedia.org/wiki/Cubic_mean) of colors
 - `Strategies.ALG(05|10|20|30|40|50|60|70|80|90)` - a mix; if a color is making up above X%, then take it, otherwise take the average
 
 ### Examples
