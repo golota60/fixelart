@@ -5,6 +5,8 @@ import {
   Pixel,
   Strategies,
   getAverageOfColors,
+  getGeometricMeanOfColors,
+  getHarmonicMeanOfColors,
   getMajorityColor,
 } from "./utils";
 
@@ -84,7 +86,16 @@ export const fixImage = <T extends MinimumData>(
 
         blocks[bI] = new Array(block.length).fill(color);
         break;
+      case Strategies.HARMONIC:
+        const harmonic = getHarmonicMeanOfColors(block);
 
+        blocks[bI] = new Array(block.length).fill(harmonic);
+        break;
+      case Strategies.GEOMETRIC:
+        const geometric = getGeometricMeanOfColors(block);
+
+        blocks[bI] = new Array(block.length).fill(geometric);
+        break;
       // get all the alg cases
       default:
         const coverage: number = occurences / (outPixWidth * outPixHeight);

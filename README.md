@@ -50,9 +50,9 @@ fixImage(png: MinimumData, options: FixOptions)
 
 Below you can find all the existing strategies and what they do underneath the hood. PRs are open for more!
 
-- Strategies.MAJORITY - take the color that occurs the most often in the block
-- Strategies.AVERAGE - take the average of colors in the blocks
-- Strategies.ALG(05|10|20|30|40|50|60|70|80|90) - a mix; if a color is making up above X%, then take it, otherwise take the average
+- `Strategies.MAJORITY` - take the color that occurs the most often in the block
+- `Strategies.AVERAGE` - take the average of colors in the blocks
+- `Strategies.ALG(05|10|20|30|40|50|60|70|80|90)` - a mix; if a color is making up above X%, then take it, otherwise take the average
 
 ### Examples
 

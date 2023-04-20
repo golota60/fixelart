@@ -17,6 +17,10 @@ export const Strategies = Object.freeze({
   MAJORITY: "majority",
   // just take the mean out of colors in the current block
   AVERAGE: "average",
+  // harmonic mean
+  HARMONIC: "harmonic",
+  // geometric mean
+  GEOMETRIC: "geometric",
   // take the color only if it is present for over X% of the image, otherwise take average
   ALG05: 0.05,
   ALG10: 0.1,
@@ -41,22 +45,30 @@ export interface FixOptions {
 }
 
 const accumulateColors = (pixels: Array<Pixel>, i: number) =>
+  pixels.map((e) => e[i]);
+
+const sumColors = (pixels: Array<Pixel>, i: number) =>
   pixels.reduce((acc, item) => {
     return acc + item[i];
   }, 0);
 
+const multiplyColors = (pixels: Array<Pixel>, i: number) =>
+  pixels.reduce((acc, item) => {
+    return acc * item[i];
+  }, 1);
+
 export const getAverageOfColors = (pixels: Array<Pixel>): Pixel => {
-  const redAccumulated = accumulateColors(pixels, 0);
+  const redAccumulated = sumColors(pixels, 0);
   const red = redAccumulated / pixels.length;
 
-  const greenAccumulated = accumulateColors(pixels, 1);
+  const greenAccumulated = sumColors(pixels, 1);
   const green = greenAccumulated / pixels.length;
 
-  const blueAccumulated = accumulateColors(pixels, 2);
+  const blueAccumulated = sumColors(pixels, 2);
   const blue = blueAccumulated / pixels.length;
 
   // TODO: Rethink whether alpha should be in this
-  const alphaAccumulated = accumulateColors(pixels, 3);
+  const alphaAccumulated = sumColors(pixels, 3);
   const alpha = alphaAccumulated / pixels.length;
 
   return [
@@ -65,6 +77,51 @@ export const getAverageOfColors = (pixels: Array<Pixel>): Pixel => {
     Math.round(blue),
     Math.round(alpha),
   ];
+};
+
+const getHarmonicMean = (numsToAvg: Array<number>) => {
+  const sumOfNegativePowers = numsToAvg
+    .map((num) => 1 / num)
+    .reduce((acc, num) => acc + num, 0);
+  return Math.round(numsToAvg.length / sumOfNegativePowers);
+};
+
+export const getHarmonicMeanOfColors = (pixels: Array<Pixel>) => {
+  const redAccumulated = accumulateColors(pixels, 0);
+  const red = getHarmonicMean(redAccumulated);
+
+  const greenAccumulated = accumulateColors(pixels, 1);
+  const green = getHarmonicMean(greenAccumulated);
+
+  const blueAccumulated = accumulateColors(pixels, 2);
+  const blue = getHarmonicMean(blueAccumulated);
+
+  const alphaAccumulated = accumulateColors(pixels, 3);
+  const alpha = getHarmonicMean(alphaAccumulated);
+
+  return [red, green, blue, alpha];
+};
+
+const getGeometricMean = (numsToAvg: Array<number>) => {
+  const product = numsToAvg.reduce((acc, item) => acc * item, 1);
+
+  return Math.round(Math.pow(product, 1 / numsToAvg.length));
+};
+
+export const getGeometricMeanOfColors = (pixels: Array<Pixel>) => {
+  const redAccumulated = accumulateColors(pixels, 0);
+  const red = getGeometricMean(redAccumulated);
+
+  const greenAccumulated = accumulateColors(pixels, 1);
+  const green = getGeometricMean(greenAccumulated);
+
+  const blueAccumulated = accumulateColors(pixels, 2);
+  const blue = getGeometricMean(blueAccumulated);
+
+  const alphaAccumulated = accumulateColors(pixels, 3);
+  const alpha = getGeometricMean(alphaAccumulated);
+
+  return [red, green, blue, alpha];
 };
 
 interface MajorityColorData {
