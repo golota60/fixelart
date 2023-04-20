@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/golota60/fixelart/compare/v0.0.6...v0.1.0) (2023-04-20)
+
+
+### Bug Fixes
+
+* geometric mean for big numbers ([7df3f03](https://github.com/golota60/fixelart/commit/7df3f03c6d9569ec5dc8cf63d364f4b071462f56))
+
 ### [0.0.6](https://github.com/golota60/fixelart/compare/v0.0.5...v0.0.6) (2023-04-20)
 
 
