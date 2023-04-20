@@ -21,6 +21,8 @@ export const Strategies = Object.freeze({
   HARMONIC: "harmonic",
   // geometric mean
   GEOMETRIC: "geometric",
+  // midrange
+  MIDRANGE: "midrange",
   // take the color only if it is present for over X% of the image, otherwise take average
   ALG05: 0.05,
   ALG10: 0.1,
@@ -120,6 +122,34 @@ export const getGeometricMeanOfColors = (pixels: Array<Pixel>) => {
 
   const alphaAccumulated = accumulateColors(pixels, 3);
   const alpha = getGeometricMean(alphaAccumulated);
+
+  return [red, green, blue, alpha];
+};
+
+const getMidrange = (numsToMidrange: Array<number>) => {
+  const biggest = numsToMidrange.reduce(
+    (nowBiggest, current) => (current > nowBiggest ? current : nowBiggest),
+    0
+  );
+  const smallest = numsToMidrange.reduce(
+    (nowSmallest, current) => (current < nowSmallest ? current : nowSmallest),
+    255
+  );
+  return Math.round((biggest + smallest) / 2);
+};
+
+export const getMidrangeOfColors = (pixels: Array<Pixel>) => {
+  const redAccumulated = accumulateColors(pixels, 0);
+  const red = getMidrange(redAccumulated);
+
+  const greenAccumulated = accumulateColors(pixels, 1);
+  const green = getMidrange(greenAccumulated);
+
+  const blueAccumulated = accumulateColors(pixels, 2);
+  const blue = getMidrange(blueAccumulated);
+
+  const alphaAccumulated = accumulateColors(pixels, 3);
+  const alpha = getMidrange(alphaAccumulated);
 
   return [red, green, blue, alpha];
 };

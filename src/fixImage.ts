@@ -8,6 +8,7 @@ import {
   getGeometricMeanOfColors,
   getHarmonicMeanOfColors,
   getMajorityColor,
+  getMidrangeOfColors,
 } from "./utils";
 
 export const fixImage = <T extends MinimumData>(
@@ -95,6 +96,11 @@ export const fixImage = <T extends MinimumData>(
         const geometric = getGeometricMeanOfColors(block);
 
         blocks[bI] = new Array(block.length).fill(geometric);
+        break;
+      case Strategies.MIDRANGE:
+        const midrange = getMidrangeOfColors(block);
+
+        blocks[bI] = new Array(block.length).fill(midrange);
         break;
       // get all the alg cases
       default:
