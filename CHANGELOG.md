@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/golota60/fixelart/compare/v0.0.5...v0.0.6) (2023-04-20)
+
+
+### Features
+
+* add cubnic and quadratic means ([017fb60](https://github.com/golota60/fixelart/commit/017fb60d8d5b0c8729ea47853e27884b7de07480))
+* add harmonic and geometric mean ([4e03768](https://github.com/golota60/fixelart/commit/4e0376868cf877626fb73abcca8cab14a2f4f7e6))
+* add midrange alg ([402f88b](https://github.com/golota60/fixelart/commit/402f88b5b71ac095bf36c0ef3106be556e7bdac8))
+
 ### [0.0.5](https://github.com/golota60/fixelart/compare/v0.0.4...v0.0.5) (2023-04-19)
 
 
