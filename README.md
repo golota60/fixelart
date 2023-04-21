@@ -1,6 +1,6 @@
 ## fixelart
 
-A simple utility to fix AI-generated pixelart. Read about how it came to be [here](https://szymon.codes/blog/fixing-ai-pixelart) or use the [playground](https:/szymon.codes/fixelart-playground)
+A simple utility to fix AI-generated pixelart. Read about how it came to be(and see examples) [here](https://szymon.codes/blog/fixing-ai-pixelart) or use the [playground](https:/szymon.codes/fixelart-playground)
 
 ### Installation
 
@@ -89,6 +89,10 @@ savePng(fixedImage, "./output.png");
 ```
 
 You could also use it pretty easily in the browser with Canvas Browser API(todo!) as demonstrated in the [demo](szymon.codes/fixelart-playground)
+
+### Feature requests/Bugs
+
+If you have found a bug or have any ideas for algorithms, or how the tool can improve don't hesitate to file an issue. Please provide the context though!
 
 ### Interactive examples
 

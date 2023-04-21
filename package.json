@@ -1,5 +1,6 @@
 {
   "name": "fixelart",
+  "description": "Tool to fix AI-generated pixelart - or just turn your image into pixelart",
   "version": "0.0.7",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -12,7 +13,20 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "pixelart",
+    "pixel",
+    "fixelart",
+    "game",
+    "ai",
+    "midjourney"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/golota60/fixelart"
+  },
   "author": "Szymon Wiszczuk <golota60@gmail.com>",
+  "homepage": "https://github.com/golota60/fixelart",
   "license": "MIT",
   "scripts": {
     "start": "yarn build && node dist/index.js",
