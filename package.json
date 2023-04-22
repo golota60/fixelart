@@ -1,7 +1,7 @@
 {
   "name": "fixelart",
   "description": "Tool to fix AI-generated pixelart - or just turn your image into pixelart",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
