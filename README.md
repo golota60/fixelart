@@ -2,6 +2,10 @@
 
 A simple utility to fix AI-generated pixelart. Read about how it came to be(and see examples) [here](https://szymon.codes/blog/fixing-ai-pixelart) or use the [playground](https:/szymon.codes/fixelart-playground)
 
+|                                Input                                 |                                 Fixelified outputs                       |
+| :------------------------------------------------------------------: | :------------------------------------------------------------------: |
+| <img src="https://github.com/golota60/fixelart/blob/master/tests/assets/test-face.png" width="400"> | <img src="https://github.com/golota60/fixelart/blob/master/assets/images-preview4.png" width="400"> |
+  
 ### Installation
 
 Using yarn
