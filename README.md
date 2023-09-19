@@ -1,6 +1,6 @@
 # fixelart
 
-A simple utility to fix AI-generated pixelart. Read about how it came to be(and see examples) [here](https://szymon.codes/blog/fixing-ai-pixelart) or use the [playground](https:/szymon.codes/fixelart-playground)
+A simple utility to fix AI-generated pixelart. Read about how it came to be(and see examples) [here](https://szymon.codes/blog/fixing-ai-pixelart) or use the [playground](https://szymon.codes/fixelart-playground)
 
 |                                Input                                 |                                 Fixelified outputs                       |
 | :------------------------------------------------------------------: | :------------------------------------------------------------------: |
